@@ -1,0 +1,28 @@
+.app__header {
+  border-bottom: 1px solid lightgrey;
+}
+
+.app__headerContainer {
+  margin: 0 auto;
+  max-width: 975px;
+  padding: 10px 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.app__headerImg {
+  transform: translateY(3px);
+}
+
+.app__headerList {
+  list-style: none;
+  display: flex;
+}
+
+.app__headerListItem:not(:last-child) {
+  margin-right: 15px;
+}
+
+.btn--header:hover {
+  border-bottom: 1px solid lightgray;
+}
