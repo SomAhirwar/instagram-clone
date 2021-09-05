@@ -4,8 +4,11 @@ const cors = require("cors");
 const http = require("http");
 const postRouter = require("./routers/postRoutes");
 const userRouter = require("./routers/userRoutes");
+const homeRouter = require("./routers/homeRoutes");
 const path = require("path");
 const dotenv = require("dotenv");
+const cookieParser = require("cookie-parser");
+const fs = require("fs");
 
 //Configuration
 dotenv.config({ path: "./config.env" });
@@ -14,14 +17,33 @@ const DB = process.env.DATABASE_LOCAL;
 const port = process.env.PORT * 1 || 8080;
 const server = http.createServer(app);
 
-//Middleware
 app.use(express.json());
-app.use(cors());
+
+//cors configuration
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "*");
+  res.header("Access-Control-Allow-Credentials", true);
+
+  if (res.method === "OPTION") {
+    res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, GET, DELETE");
+  }
+  next();
+});
+// app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+app.use(cookieParser()); //req.cookies
+
+//Setting jwt cookie to headers Authorization bearer token
+app.use((req, res, next) => {
+  if (req.cookies.jwt) req.headers.Authorization = `Bearer ${req.cookies.jwt}`;
+  next();
+});
 
 //Routes
 app.use("/posts", postRouter);
 app.use("/user", userRouter);
 app.use("/public", express.static(path.join(__dirname, "public")));
+app.use("/", homeRouter);
 // app.use(express.static(`${__dirname}/public`));
 
 //////////////////////

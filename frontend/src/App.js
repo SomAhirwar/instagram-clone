@@ -1,97 +1,105 @@
-import axios from "axios";
 import React from "react";
-import Post from "./Post";
-import Icon from "react-icons-kit";
-import { plus } from "react-icons-kit/metrize/plus";
+import axios from "axios";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
+import Header from "./components/header/Header";
+import Home from "./components/home/Home";
+import SignupForm from "./components/signupForm/SignupForm";
+import UploadForm from "./components/uploadForm/UploadForm";
+import Profile from "./components/profile/Profile";
+import inputSetState from "./utils/inputSetState";
 import "./App.css";
 
 const url = `http://127.0.0.1:8080`;
 
 function App() {
   const [posts, setPosts] = React.useState([]);
-  const usernameRef = React.useRef();
-  const imageUrlRef = React.useRef();
-  const captionRef = React.useRef();
-  const form = React.useRef();
+  const [user, setUser] = React.useState({});
+  const [username, setUsername] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [authenticated, setAuthenticated] = React.useState(
+    () => localStorage.getItem("authenticated") === "true"
+  );
+
+  const uploadFormRef = React.useRef();
 
   React.useEffect(() => {
+    let mounted = true;
+    const user = JSON.parse(window.localStorage.getItem("user"));
+    if (mounted) setUser(user);
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  React.useEffect(() => {
+    window.localStorage.setItem("authenticated", authenticated);
+
     async function getAllPosts() {
-      const postServer = await axios.get(`${url}/posts`);
+      const postServer = await axios.get(`/posts`);
+      console.log(postServer.data.data.posts);
       setPosts(postServer.data.data.posts);
       return postServer;
     }
 
-    getAllPosts();
-  }, []);
-
-  async function addPost(event) {
-    event.preventDefault();
-
-    console.log(event);
-    const data = new FormData(event.target);
-    console.log(imageUrlRef.current);
-    data.set("username", usernameRef.current.value);
-    data.set("imageUrl", imageUrlRef.current.files[0]);
-    data.set("caption", captionRef.current.value);
-    console.log();
-    const post = await axios.post(`${url}/posts`, data);
-    form.current.style.display = "none";
-    setPosts((prev) => [post.data.data.post, ...prev]);
-  }
+    authenticated ? getAllPosts() : setPosts([]);
+  }, [authenticated]);
 
   return (
     <div className="app">
-      <div className="app__header">
-        <div className="app__headerContainer">
-          <img
-            className="app__headerImg"
-            src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png"
-          ></img>
+      {authenticated ? (
+        <Header
+          authenticated={authenticated}
+          setAuthenticated={setAuthenticated}
+          setUsername={setUsername}
+          setPassword={setPassword}
+          setUser={setUser}
+          uploadFormRef={uploadFormRef}
+        />
+      ) : null}
 
-          <a
-            href="#"
-            className="btn app__btn-upload"
-            onClick={() =>
-              (form.current.style.display =
-                form.current.style.display === "flex" ? "none" : "flex")
-            }
-          >
-            <Icon icon={plus} size={"25px"} />
-            <span style={{ display: "inline-block", marginLeft: "10px" }}>
-              Upload
-            </span>
-          </a>
-        </div>
-      </div>
+      <UploadForm setPosts={setPosts} uploadFormRef={uploadFormRef} />
 
-      <form ref={form} className="app__uploadPost" onSubmit={addPost}>
-        <input
-          name="username"
-          className="app__usename"
-          placeholder="Username"
-          ref={usernameRef}
-        ></input>
+      <BrowserRouter>
+        <Switch>
+          <Route
+            path="/"
+            exact
+            render={() => (
+              <Home
+                username={username}
+                password={password}
+                usernameSetState={inputSetState(setUsername)}
+                passwordSetState={inputSetState(setPassword)}
+                authenticated={authenticated}
+                posts={posts}
+                setAuthenticated={setAuthenticated}
+                setUser={setUser}
+              />
+            )}
+          />
 
-        <input
-          name="imageUrl"
-          type="file"
-          className="app__imageUrl"
-          placeholder="Image"
-          ref={imageUrlRef}
-        ></input>
+          <Route
+            path="/signup"
+            render={() => (
+              <SignupForm
+                username={username}
+                password={password}
+                setAuthenticated={setAuthenticated}
+                usernameSetState={inputSetState(setUsername)}
+                passwordSetState={inputSetState(setPassword)}
+                setUser={setUser}
+              />
+            )}
+          />
 
-        <input
-          name="caption"
-          className="app__caption"
-          placeholder="Caption"
-          ref={captionRef}
-        ></input>
-        <button type="submit">Submit</button>
-      </form>
-
-      {posts.map((post) => (
-        <Post key={post._id} {...post} imageUrl={`${url}/${post.imageUrl}`} />
-      ))}
+          <Route
+            path="/:username"
+            render={({ match }) => (
+              <Profile match={match} user={user} setUser={setUser} />
+            )}
+          />
+        </Switch>
+      </BrowserRouter>
     </div>
   );
 }

@@ -13,34 +13,6 @@
   background-color: white;
 }
 
-.app__header {
-  border-bottom: 1px solid lightgrey;
-}
-
-.app__headerContainer {
-  margin: 0 auto;
-  max-width: 975px;
-  padding: 10px 0;
-  display: flex;
-  justify-content: space-between;
-}
-
-.app__headerImg {
-  transform: translateY(3px);
-}
-
-.app__uploadPost {
-  display: flex;
-  flex-direction: column;
-  display: none;
-  max-width: 975px;
-  margin: 0 auto;
-}
-
-.app__uploadPost > * {
-  margin: 10px;
-}
-
 .btn {
   text-decoration: none;
   color: #262626;

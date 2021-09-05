@@ -1,23 +1,25 @@
 const { promisify } = require("util");
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
+const userController = require("./userController");
 
-const signTokenAndSendResponse = (user, statusCode, res) => {
+const signTokenAndSendResponse = async (user, statusCode, res) => {
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
   let cookieOptions = {
-    expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
-    ),
+    maxAge: process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
     httpOnly: true,
   };
   if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
 
-  const userObj = user.toObject();
-  delete userObj.password;
-  delete userObj.createdAt;
-  delete userObj.__v;
+  // const userObj = user.toObject();
+  // delete userObj.password;
+  // delete userObj.createdAt;
+  // delete userObj.__v;
+
+  const userPopulated = await userController.getPopulatedUser(user._id);
+
   res
     .status(statusCode)
     .cookie("jwt", token, cookieOptions)
@@ -25,7 +27,7 @@ const signTokenAndSendResponse = (user, statusCode, res) => {
       status: "success",
       data: {
         token,
-        user: userObj,
+        user: userPopulated,
       },
     });
 };
