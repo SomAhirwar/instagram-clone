@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
 import "./Header.css";
+import { useHistory } from "react-router-dom";
 
 function Header({
   authenticated,
@@ -10,6 +11,7 @@ function Header({
   setUser,
   uploadFormRef = { uploadFormRef },
 }) {
+  const history = useHistory();
   async function logout() {
     const res = await axios.get("/user/logout");
     setAuthenticated(false);
@@ -17,6 +19,7 @@ function Header({
     setPassword("");
     window.localStorage.setItem("user", "{}");
     setUser({});
+    if (history) history.push("/");
   }
 
   return (
@@ -37,13 +40,13 @@ function Header({
                     : "flex";
               }}
               className="btn btn--header"
-              href="#"
+              role="button"
             >
               Upload
             </a>
           </li>
           <li className="app__headerListItem">
-            <a onClick={logout} className="btn btn--header" href="#">
+            <a onClick={logout} className="btn btn--header" role="button">
               Log Out
             </a>
           </li>

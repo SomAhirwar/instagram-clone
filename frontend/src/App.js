@@ -6,6 +6,7 @@ import Home from "./components/home/Home";
 import SignupForm from "./components/signupForm/SignupForm";
 import UploadForm from "./components/uploadForm/UploadForm";
 import Profile from "./components/profile/Profile";
+import Chat from "./components/chat/Chat";
 import inputSetState from "./utils/inputSetState";
 import "./App.css";
 
@@ -92,8 +93,10 @@ function App() {
             )}
           />
 
+          <Route path="/chat" exact render={() => <Chat user={user} />} />
           <Route
             path="/:username"
+            exact
             render={({ match }) => (
               <Profile match={match} user={user} setUser={setUser} />
             )}

@@ -20,4 +20,6 @@ router
   .route("/unfollow")
   .patch(authController.protect, userController.unfollow);
 
+router.route("/:id").get(userController.getUser);
+
 module.exports = router;

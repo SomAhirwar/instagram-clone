@@ -5,6 +5,8 @@ const http = require("http");
 const postRouter = require("./routers/postRoutes");
 const userRouter = require("./routers/userRoutes");
 const homeRouter = require("./routers/homeRoutes");
+const conversationRouter = require("./routers/conversationRoutes");
+const messageRouter = require("./routers/messageRoutes");
 const path = require("path");
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
@@ -42,6 +44,8 @@ app.use((req, res, next) => {
 //Routes
 app.use("/posts", postRouter);
 app.use("/user", userRouter);
+app.use("/conversation", conversationRouter);
+app.use("/message", messageRouter);
 app.use("/public", express.static(path.join(__dirname, "public")));
 app.use("/", homeRouter);
 // app.use(express.static(`${__dirname}/public`));

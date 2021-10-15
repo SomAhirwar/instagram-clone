@@ -64,6 +64,23 @@ exports.createUser = async (req, res) => {
   }
 };
 
+exports.getUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    res.status(201).json({
+      status: "success",
+      data: {
+        user,
+      },
+    });
+  } catch (err) {
+    res.status(403).json({
+      satus: "failed",
+      data: err,
+    });
+  }
+};
+
 exports.follow = async (req, res) => {
   const { follow } = req.body;
   try {

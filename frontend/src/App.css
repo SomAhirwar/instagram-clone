@@ -21,4 +21,5 @@
   font-weight: 800;
   display: flex;
   align-items: center;
+  cursor: pointer;
 }
