@@ -17,6 +17,7 @@ function Chat({ user }) {
   const [newMessage, setNewMessage] = React.useState({});
 
   const messageInput = React.useRef();
+  const scrollRef = React.useRef();
   const socket = React.useRef();
   // console.log(user);
   React.useEffect(() => {
@@ -65,6 +66,11 @@ function Chat({ user }) {
     const reciverId = currConversationUser._id;
     setConversationMessages((prev) => [...prev, newMessage]);
   }, [newMessage]);
+
+  React.useEffect(() => {
+    console.log(scrollRef);
+    scrollRef?.current?.scrollIntoView({ behavior: "smooth" });
+  }, [conversationMessages]);
 
   React.useEffect(() => {
     async function getConversationMessage() {
@@ -181,7 +187,9 @@ function Chat({ user }) {
         </div>
         <div className="chat__rightBoxMid">
           {conversationMessages.map((el) => (
-            <Message message={el} user={user} key={el._id} />
+            <div ref={scrollRef}>
+              <Message message={el} user={user} key={el._id} />
+            </div>
           ))}
         </div>
         <div className="chat__rightBoxDown">

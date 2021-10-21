@@ -24,7 +24,7 @@ exports.createConversation = async (req, res) => {
 };
 
 exports.getConversation = async (req, res) => {
-  console.log(req.user);
+  // console.log(req.user);
   try {
     const conversations = await Conversations.find({
       members: { $in: req.user._id },

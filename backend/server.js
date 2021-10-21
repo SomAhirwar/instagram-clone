@@ -15,7 +15,13 @@ const fs = require("fs");
 //Configuration
 dotenv.config({ path: "./config.env" });
 const app = express();
-const DB = process.env.DATABASE_LOCAL;
+const DB =
+  process.env.DATABASE_URL.replace(
+    "<username>",
+    process.env.DATABASE_USERNAME
+  ).replace("<password>", process.env.DATABASE_PASSWORD) ||
+  process.env.DATABASE_LOCAL;
+
 const port = process.env.PORT * 1 || 8080;
 const server = http.createServer(app);
 
